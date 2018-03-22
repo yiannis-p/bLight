@@ -1,0 +1,181 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.aleax</groupId>
+		<artifactId>blight-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>blight-compiler</artifactId>
+	<packaging>jar</packaging>
+
+	<name>bLight Compiler</name>
+
+	<description>
+		This module provides the default compilation implementation for bLight.
+	</description>
+
+	<build>
+		<plugins>
+
+			<!-- For the stand-alone command-line compiler -->			
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4.1</version>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <!-- For the binary distribution -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.9</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/dist-libs</outputDirectory>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<excludeGroupIds>
+								junit,org.hamcrest,${project.groupId}
+							</excludeGroupIds>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>	
+		
+			<!-- For dynamic compilation tests -->
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-resources-plugin</artifactId>
+			    <version>2.6</version>
+			    <executions>
+			      <execution>
+			        <id>additional-resources</id>
+			        <phase>process-test-resources</phase>
+			        <goals>
+			          <goal>copy-resources</goal>
+			        </goals>
+			        <configuration>
+			          <outputDirectory>${project.build.testOutputDirectory}/com/aleax/blight/dynamic/templates</outputDirectory>
+			          <resources>
+			            <resource>
+			              <directory>${project.basedir}/src/test/java/com/aleax/blight/dynamic/templates</directory>
+			            </resource>
+			          </resources>
+			        </configuration>
+			      </execution>
+			    </executions>
+			</plugin>
+
+			<!-- For precompilation tests: Compile the templates -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.5.0</version>
+				<executions>
+					<execution>
+						<id>compile-templates</id>
+						<phase>process-test-classes</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>com.aleax.blight.compiler.BatchCompiler</mainClass>
+					<arguments>
+						<argument>-s</argument>
+						<argument>${project.basedir}${file.separator}src${file.separator}test${file.separator}java</argument>
+						<argument>-p</argument>
+						<argument>com.aleax.blight.precompiled.templates</argument>
+						<argument>-o</argument>
+						<argument>${project.build.directory}${file.separator}generated-test-sources</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+		
+			<!-- For precompilation tests: Java compile the compiled templates -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>compile</id>
+						<phase>process-test-classes</phase>
+						<configuration>
+							<target>
+							
+								<javac
+									includeantruntime="false" 
+									srcdir="${project.build.directory}${file.separator}generated-test-sources"
+								    destdir="${project.build.testOutputDirectory}"
+								    classpathref="maven.compile.classpath"
+								    source="1.8"
+								    target="1.8"/>
+         								
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			    <dependencies>
+			        <dependency>
+			            <groupId>com.sun</groupId>
+			            <artifactId>tools</artifactId>
+			            <version>1.8.0</version>
+			            <scope>system</scope>
+			            <systemPath>${java.home}/../lib/tools.jar</systemPath>
+			        </dependency>
+			    </dependencies>
+   			</plugin>
+
+		</plugins>
+	</build>
+
+	<dependencies>
+	
+		<dependency>
+			<groupId>com.aleax</groupId>
+			<artifactId>blight-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.eclipse.jdt</groupId>
+			<artifactId>org.eclipse.jdt.core</artifactId>
+			<version>3.7.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		
+	</dependencies>
+</project>

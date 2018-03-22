@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Introduction</title>
+    <author email="email@invalid">Yiannis Paschalidis</author>
+  </properties>
+
+  <body>
+
+    <!--  Section uses an H2, so use H3 and below for sub-sections. -->
+    <section name="bLight">
+
+<p>bLight is a minimalistic compile-time type-safe templating mechanism for use in Java 1.8+ applications.</p>
+
+<h3>Why another templating framework?</h3>
+
+<p>
+There are plenty of templating frameworks available for Java, so why invent another one? 
+</p>
+
+<p>
+bLight is:
+</p>
+
+<ul>
+	<li>Safe</li>
+	<li>Familiar</li>
+	<li>Fast</li>
+	<li>Flexible</li>
+	<li>Small</li>
+</ul>
+ 
+<h4>Safe:</h4> 
+
+<p>The primary driver for creating bLight was to reduce common template programming errors
+caused by having "Stringly" rather than strongly typed templates.</p>
+
+<p>The usual pattern for integrating templating frameworks with application code
+involves tying application code to templates with a bunch of String(s). For example, this may
+involve creating and passing a map of String key / Object value pairs to the templating engine,
+The keys are hard-coded separately in both the Java code and templates and must match exactly. 
+In addition to be a duplication of effort, mismatches caused by typographical errors will only
+be picked up at run-time.</p>
+
+<p>After the top-level data has been made available to the template, a string notation is
+used for accessing and displaying properties within the top-level beans. Again, it is easy
+to make a typo here and not have it picked up until the application is run. In addition,
+use of this notation makes it harder to refactor the application's model beans, as developers
+are limited to using text searches within templates to try to track down where each bean or
+bean property is used.</p>
+
+<p>In contrast, templates in bLight are Java code and use type-safe getters/setters to
+pass data between the controller and view. An incorrect call to a setter will result in a 
+compilation error and will be picked up in the developer's IDE. The combination of having 
+good Javadoc documentation and auto-complete functionality in IDEs further assists development.
+IDEs will also automatically process bLight templates when performing refactoring operations
+on application model classes, reducing the effort required and the chance of introducing errors.</p>
+
+<h4>Familiar</h4>
+
+<p>bLight offers an extremely low learning curve. Java developers don't need to learn another 
+syntax - they already know how to write conditionals/loops/etc. in bLight as the templates
+are just Java code. Templates can be written and debugged using tools developers are already
+familiar with.</p>
+
+<p>bLight allows both pre and on-demand compilation of templates. On-demand template compilation 
+allows developers to change template content on the fly during development without requiring a restart
+of the application.</p>
+
+<h4>Fast</h4>
+
+<p>bLight templates are not run through a templating engine - they are compiled to Java
+classes when the application is built, and invoked directly by the VM. As a result, template 
+execution is extremely fast. A comparison of bLight against some of the most popular 
+templating frameworks is shown in the chart below.</p>
+
+<p>Memory use is also very low, both in terms of static overhead and temporary objects
+generated during template execution. Each template only holds some basic state information
+and the application data it requires to produce the output. Template output is not
+buffered by default.</p>
+
+<p class="image"> 
+  
+  <img src="images/benchmark.png" alt="Comparison of template benchmarks"/>
+  <br/>
+  <span style="width: 640px;">
+  	Comparison of bLight against the most popular Java templating engines. 
+  	Benchmark run on a Core i7-4790K (8x 4GHz), Windows 7, Java 1.8.0_131 64 bit.
+  	See <a href="https://github.com/mbosecke/template-benchmark">https://github.com/mbosecke/template-benchmark</a>
+  </span>
+  
+</p>
+ 
+<h4>Flexible</h4>
+
+<p>Just as for most templating framworks, bLight supports generation of any text output format, 
+such as plain text, HTML, XML, email, etc. It is simple to add extend the template framework to add 
+output-specific productivity methods. In addition, use of application utility classes is trivial, as 
+the Java templates can directly call the classes.</p>
+
+<h4>Small</h4>
+
+<p>When using the typical deployment pattern (pre-compiled templates), bLight has a small deployment
+and memory footprint. The core library is only a few KB in size, with no external dependencies. There
+is also the option of just using the compiler with your own classes and having a zero footprint.</p>
+
+<h3>What's the catch?</h3>
+
+<p>Given that templates are essentially Java code, the syntax is more verbose than a dedicated
+templating language. The amount of typing required does, however, sit closer to a templating 
+language than to string concatenation &amp; escaping in pure Java.</p> 
+
+<p>bLight is not suitable for systems where templates are authored by end users during run-time,
+due to the security risk of having malicious code written directly into a template.</p>
+
+<h3>How does it work?</h3>
+
+<p>bLight templates are written as normal Java clases within your project. 
+An example template is shown below.</p>
+
+<source>
+package example.myorg.myapp.templates;
+
+public class HelloWorld extends com.aleax.blight.AbstractTemplate
+{
+   public void execute() throws java.io.IOException
+   {
+      /*Hello World!*/
+   }
+}</source>
+
+<p>bLight treats multi-line comments inside a template's execute method as content
+which should be output when the template is run. In the example code above,
+the template produces the text "Hello World!" when run. Given that bLight is (ab)using 
+Java comments to do something other than they were intended, templates must first be 
+"compiled" before they can be run. This can be done either during a build or on-demand
+at run-time.</p>
+
+    </section>
+
+  </body>
+
+</document>
+  

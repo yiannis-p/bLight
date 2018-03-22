@@ -1,0 +1,173 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.aleax</groupId>
+	<artifactId>blight-parent</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>bLight parent</name>
+	
+	<description>
+		bLight is a minimalistic compile-time type-safe templating mechanism for use in Java applications. 
+	</description>
+
+    <developers>
+        <developer>
+            <name>Yiannis Paschalidis</name>
+            <roles>
+                <role>Project Admin</role>
+                <role>Developer</role>
+            </roles>
+            <timezone>+10</timezone>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>LGPLv3</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
+            <distribution>repo,manual</distribution>
+            <comments>GNU Lesser General Public License</comments>
+        </license>
+    </licenses>
+
+    <inceptionYear>2018</inceptionYear>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+	<build>
+	
+		<plugins>			
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+			<!-- Generates a cut-down site for the distribution zip -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.4</version>
+				<executions>
+					<execution>
+						<id>dist-site</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/dist-site</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.4</version>
+ 			</plugin>
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<executions>
+					<execution>
+						<id>dist-site-source-zips</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/dist-site</outputDirectory>
+							<resources>
+								<resource>
+									<directory>blight-examples/target</directory>
+									<includes>
+										<include>*.zip</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>site-source-zips</id>
+						<phase>site</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/site</outputDirectory>
+							<resources>
+								<resource>
+									<directory>blight-examples/target</directory>
+									<includes>
+										<include>*.zip</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin> 			
+			
+		</plugins>
+		
+	</build>
+
+	<profiles>
+		<profile>
+			<!-- 
+				Unfortunately, the site plugin doesn't yet support per-execution configuration.
+				We don't want to include all the project reports for the distribution, so the
+				full site build must be run with -Dfull_site=true.
+			-->
+			<id>full_site</id>
+			<activation>
+				<property>
+					<name>full_site</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<reporting>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-project-info-reports-plugin</artifactId>
+						<version>2.9</version>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-report-plugin</artifactId>
+						<version>2.20.1</version>
+						<configuration>
+							<aggregate>true</aggregate>
+						</configuration>
+					</plugin>
+				</plugins>
+			</reporting>
+		</profile>
+	</profiles>
+
+	<modules>
+		<module>blight-core</module>
+		<module>blight-compiler</module>
+		<module>blight-maven-plugin</module>
+		<module>blight-ant-task</module>
+		<module>blight-examples</module>
+		<module>blight-dist</module>
+	</modules>
+	
+</project> 

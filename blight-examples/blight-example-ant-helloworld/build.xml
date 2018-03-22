@@ -1,0 +1,47 @@
+<project>
+
+    <!-- Set to the location if the bLight library. -->
+    <property name="blight.dir" value="${basedir}/lib/blight-dist"/>
+
+    <!-- Import bLight Ant task -->
+    <typedef resource="blight-ant.xml" classpath="${blight.dir}/tools/blight-ant-task.jar"/>
+
+    <path id="compile.classpath">
+        <fileset dir="${blight.dir}" includes="lib/blight-core.jar"/>
+    </path>
+
+    <target name="compile">
+        
+        <!-- Make sure the target directory exists. -->
+        <mkdir dir="${basedir}/target/classes"/>
+
+        <!-- First, compile the complete set of Java source. -->
+        <javac srcdir="${basedir}/src" 
+               destdir="${basedir}/target/classes"
+               classpathref="compile.classpath"/>
+
+        <!-- Pre-compile the bLight templates -->
+        <blight.compileTemplates outputDir="${basedir}/target/compiled-templates">
+            <sourceDir>${basedir}/src/main/java</sourceDir>
+            <!-- Include your template packages here -->
+            <package>example.mycompany.myapp</package>
+        </blight.compileTemplates>
+
+        <!-- Finally, Java compile just the templates. -->
+        <javac srcdir="${basedir}/target/compiled-templates" 
+               destdir="${basedir}/target/classes"
+               classpath="${basedir}/target/classes" 
+               classpathref="compile.classpath"/>
+        
+    </target>
+
+    <target name="run" depends="compile">
+        <java fork="true" classname="example.mycompany.myapp.MyApp">
+            <classpath>
+                <path refid="classpath"/>
+                <path location="${basedir}/target/classes"/>
+            </classpath>
+        </java>
+    </target>
+
+</project>

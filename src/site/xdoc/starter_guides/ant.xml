@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Ant integration</title>
+    <author email="email@invalid">Yiannis Paschalidis</author>
+  </properties>
+
+  <body>
+
+    <!--  Section uses an H2, so use H3 and below for sub-sections. -->
+    <section name="Getting started - Ant">
+    
+<p>This guide shows how to get a simple "Hello World" bLight application
+up and running using Apache Ant. For simplicity, this example is a 
+command-line application which runs and template and then exits. It is
+not an example of good practice, as it omits nicities such as error handling,
+logging and unit testing. The complete source code and configuration discussed 
+here can be downloaded together in a single 
+<a href="../blight-example-ant-helloworld-src.zip">zip file</a>.</p>
+
+<p>Templates should be placed together with your other Java code under
+<code>src/main/java</code>. It is recommended that templates are placed in 
+their own package. In the example, the application consists of the 
+main <code>MyApp</code> application class, and a single template
+named <code>MyTemplate</code>. The <code>build.xml</code> is a standard
+Ant build file and the <code>lib</code> directory will eventually
+contain the libraries required to build and run the application.</p>
+ 
+<source>
+/
+|-- build.xml
+|-- lib/
+`-- src/
+    `-- main/java/example/mycompany/myapp/
+        |-- MyApp.java
+        `-- templates/
+            `-- MyTemplate.java
+</source>
+
+<h3>Java code</h3>
+
+<p>The bLight Java API is quite small. There are only two classes which you need to be familiar
+with - <code>AbstractTemplate</code> which is the default parent class for all templates, and  
+the <code>TemplateManager</code> which executes templates.</p>
+
+<h4>MyApp.java</h4>
+
+<p>The application code creates a template, sets the output to System.out and executes the template.
+<em>Note</em>: While it is possible to execute templates directly, it is recommended to always use
+the TemplateManager. This allows for dynamic template compilation (see below) during development 
+without requiring an application restart each time a template is changed.</p>
+
+<source>
+package example.mycompany.myapp;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import com.aleax.blight.TemplateException;
+import com.aleax.blight.TemplateManager;
+
+import example.mycompany.myapp.templates.MyTemplate;
+
+public class MyApp
+{
+    public static void main(final String[] args) throws TemplateException, IOException
+    {
+        // Create a new template
+        MyTemplate template = new MyTemplate();
+        
+        // Configure the template to send its output to System.out
+        PrintWriter out = new PrintWriter(System.out);
+        template.setOutput(out);
+
+        // Compile and execute the template
+        TemplateManager.execute(template);
+
+        // Ensure the output is written before the app terminates
+        out.flush();
+    }
+}
+</source>
+
+<h4>MyTemplate.java</h4>
+
+<p>The template extends AbstractTemplate and must implement the <code>execute()</code> method.
+Any comments within this method are written to the template output when the method is called
+on the compiled template. The example template also contains a single setter to pass in the 
+customer details to include in the template output.</p>
+
+<source>
+package example.mycompany.myapp.templates;
+
+import java.io.IOException;
+import com.aleax.blight.AbstractTemplate;
+
+public class MyTemplate extends AbstractTemplate
+{
+    @Override
+    public void execute() throws IOException
+    {
+        /*Hello World!*/
+    }
+}
+</source>
+
+<h3>Libraries</h3>
+
+<p>Download and unpack the bLight binary distribution into the lib directory.
+The lib directory structure should end up with the following:</p>
+
+<source>
+lib/
+`-- blight-dist/
+    |-- LICENSE.txt
+    `-- doc/
+    `-- lib/
+    |   |-- compiler-libs/
+    |   |-- blight-compiler.jar
+    |   `-- blight-core.jar
+    `-- tools/
+        |-- blight-ant-task.jar
+        |-- blight-compiler-standalone.jar
+        `-- blight-maven-plugin.jar
+</source>
+
+<p>The minimum requirement for using bLight with Ant is the core runtime
+<code>blight-core.jar</code> and the Ant task defined in 
+<code>blight-ant-task.jar</code>.</p>
+
+<h3>Build</h3>
+
+<p>For basic use, bLight only requires a single library at runtime. 
+The blight-core.jar will need to be added to the class path which you 
+use to compile and run your project.</p>
+
+<p>bLight templates must be compiled before they can be used. For a production
+deployment, they should be pre-compiled using the bLight Ant task.
+The basic steps are:</p>
+
+<ol>
+	<li>Compile the entire application. This ensures that everything is at least syntactically valid.</li>
+	<li>Run the bLight compile Ant task to pre-compile the templates.</li>
+	<li>Java compile the pre-compiled templates.</li>
+</ol>
+
+<p>An example of how to do this is shown below.</p>
+
+<source><![CDATA[
+<project>
+
+    <!-- Set to the location if the bLight library. -->
+    <property name="blight.dir" value="${basedir}/lib/blight-dist"/>
+
+    <!-- Import bLight Ant task -->
+    <typedef resource="blight-ant.xml" classpath="${blight.dir}/tools/blight-ant-task.jar"/>
+
+    <path id="compile.classpath">
+        <fileset dir="${blight.dir}" includes="lib/blight-core.jar"/>
+    </path>
+
+    <target name="compile">
+        
+        <!-- Make sure the target directory exists. -->
+        <mkdir dir="${basedir}/target/classes"/>
+
+        <!-- First, compile the complete set of Java source. -->
+        <javac srcdir="${basedir}/src" 
+               destdir="${basedir}/target/classes"
+               classpathref="compile.classpath"/>
+
+        <!-- Pre-compile the bLight templates -->
+        <blight.compileTemplates outputDir="${basedir}/target/compiled-templates">
+            <sourceDir>${basedir}/src/main/java</sourceDir>
+            <!-- Include your template packages here -->
+            <package>example.mycompany.myapp</package>
+        </blight.compileTemplates>
+
+        <!-- Finally, Java compile just the templates. -->
+        <javac srcdir="${basedir}/target/compiled-templates" 
+               destdir="${basedir}/target/classes"
+               classpath="${basedir}/target/classes" 
+               classpathref="compile.classpath"/>
+        
+    </target>
+
+    <target name="run" depends="compile">
+        <java fork="true" classname="example.mycompany.myapp.MyApp">
+            <classpath>
+                <path refid="compile.classpath"/>
+                <path location="${basedir}/target/classes"/>
+            </classpath>
+        </java>
+    </target>
+
+</project>
+]]></source>
+
+<h3>Enabling dynamic template compilation</h3>
+
+<p>Templates can be compiled at run-time for faster development without requiring an application 
+restart after each change. To enable this functionality, the blight-compiler and template java
+sources must be added to the classpath, and the templates must not be pre-compiled until the
+application is packaged.</p>
+
+<p>You will need to add the bLight compiler to your application dependencies. The scope should be set to
+either <code>test</code> or <code>provided</code> to avoid the dependency being added to the packaged 
+application. Use scope "test" if you will only be running tests, or "provided" for running both tests 
+and the main application from within your IDE.</p>
+
+<source><![CDATA[
+   <!-- For on-demand bLight template compilation when running the app in an IDE. -->
+   <dependency>
+      <groupId>com.aleax</groupId>
+      <artifactId>blight-compiler</artifactId>
+      <version>0.0.1</version>
+      <!-- Use scope "provided" or "test" only. -->
+      <scope>provided</scope>
+   </dependency>
+]]></source>
+
+<p>Two changes are required in the build xml. The bLight compiler and template Java source must 
+be added to the classpath so that templates can be compiled at run-time. The bLight Ant task is moved into 
+run in a separate target, as we don't want the templates to be pre-compiled when developing/testing 
+the application.</p>
+
+<source><![CDATA[
+<project>
+
+    <!-- Set to the location if the bLight library. -->
+    <property name="blight.dir" value="${basedir}/lib/blight-dist"/>
+
+    <!-- Import bLight Ant task -->
+    <typedef resource="blight-ant.xml" classpath="${blight.dir}/tools/blight-ant-task.jar"/>
+
+    <path id="compile.classpath">
+        <fileset dir="${blight.dir}" includes="lib/blight-core.jar"/>
+    </path>
+
+    <path id="run.classpath">
+        <fileset dir="${blight.dir}" includes="lib/blight-core.jar"/>
+        <fileset dir="${blight.dir}" includes="lib/blight-compiler.jar"/>
+        <fileset dir="${blight.dir}" includes="lib/compiler-libs/*.jar"/>
+    </path>
+
+    <target name="compile">
+        
+        <!-- Make sure the target directory exists. -->
+        <mkdir dir="${basedir}/target/classes"/>
+
+        <!-- Compile the complete set of Java source. -->
+        <javac srcdir="${basedir}/src" 
+               destdir="${basedir}/target/classes"
+               classpathref="compile.classpath"/>
+
+    </target>
+
+    <target name="compile.for.dist" depends="compile">
+    
+        <!-- Pre-compile the bLight templates -->
+        <blight.compileTemplates outputDir="${basedir}/target/compiled-templates">
+            <sourceDir>${basedir}/src/main/java</sourceDir>
+            <!-- Include your template packages here -->
+            <package>example.mycompany.myapp</package>
+        </blight.compileTemplates>
+        
+        <!-- Java compile just the templates. -->
+        <javac srcdir="${basedir}/target/compiled-templates" 
+               destdir="${basedir}/target/classes"
+               classpath="${basedir}/target/classes" 
+               classpathref="compile.classpath"/>
+               
+    </target>
+
+    <target name="run" depends="compile">
+        <java fork="true" classname="example.mycompany.myapp.MyApp">
+            <classpath>
+                <path refid="run.classpath"/>
+                <path location="${basedir}/target/classes"/>
+            </classpath>
+        </java>
+    </target>
+
+</project>
+]]></source>
+
+    </section>
+
+  </body>
+
+</document>
+  

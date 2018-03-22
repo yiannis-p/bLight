@@ -1,0 +1,108 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>com.aleax</groupId>
+		<artifactId>blight-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>blight-dist</artifactId>
+	<packaging>pom</packaging>
+
+	<name>bLight Dist</name>
+
+	<description>Contains the configuration and other artefacts necessary to produce the bLight binary distribution.</description>
+
+	<build>
+		<plugins>
+		
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-dependency-plugin</artifactId>
+			    <executions>
+			        <execution>
+			            <id>copy-dependencies</id>
+			            <phase>prepare-package</phase>
+			            <goals>
+			                <goal>copy-dependencies</goal>
+			            </goals>
+			            <configuration>
+			                <outputDirectory>${project.build.directory}/lib</outputDirectory>
+			                <overWriteReleases>false</overWriteReleases>
+			                <overWriteSnapshots>false</overWriteSnapshots>
+			                <overWriteIfNewer>true</overWriteIfNewer>
+			            </configuration>
+			        </execution>
+			    </executions>
+			</plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4.1</version>
+                <executions>
+
+                    <execution>
+                        <id>assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assembly</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>
+                                    src/main/assembly/bin.xml
+                                </descriptor>
+                                <descriptor>
+                                    src/main/assembly/src.xml
+                                </descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+			
+		</plugins>		
+	</build>
+
+	<dependencies>
+		
+		<dependency>
+			<groupId>com.aleax</groupId>
+			<artifactId>blight-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.aleax</groupId>
+			<artifactId>blight-compiler</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.aleax</groupId>
+			<artifactId>blight-compiler</artifactId>
+			<version>${project.version}</version>
+			<classifier>jar-with-dependencies</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>com.aleax</groupId>
+			<artifactId>blight-ant-task</artifactId>
+			<version>${project.version}</version>
+			<classifier>jar-with-dependencies</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>com.aleax</groupId>
+			<artifactId>blight-maven-plugin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+	</dependencies>
+
+</project>

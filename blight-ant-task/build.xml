@@ -1,0 +1,34 @@
+<project name="test_ant_compile_task" default="help">
+
+    <!-- Run the compile -->
+    <target name="help" description="Displays help information">
+    	<echo>
+    		This Ant file is used to test the built blight Ant task jar.
+    		The jar itself is built using Maven, not Ant.
+    		To run the tests, use "ant compile.test".
+    	</echo>
+    </target>
+	
+    <!-- Run the compile -->
+    <target name="compile.test"
+        description="This tests the compile task">
+
+        <!-- Imports -->
+        <typedef
+            resource  ="blight-ant.xml"
+            classpath ="target/blight-ant-task-0.0.1-SNAPSHOT-jar-with-dependencies.jar"/>
+
+        <!-- Run the compile task -->
+        <blight.compileTemplates
+            outputDir="${basedir}/target/compiled-templates">
+
+        	<sourceDir>${basedir}/src/main/java</sourceDir>
+        	<sourceDir>${basedir}/src/test/java</sourceDir>
+        	
+            <package>foo</package>
+
+         </blight.compileTemplates>
+
+    </target>
+
+</project>

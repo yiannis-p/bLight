@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Maven plugin reference</title>
+    <author email="email@invalid">Yiannis Paschalidis</author>
+  </properties>
+
+  <body>
+
+    <!--  Section uses an H2, so use H3 and below for sub-sections. -->
+    <section name="bLight Maven plugin">
+
+<p>The bLight Maven plugin is used to pre-compile templates.</p>
+
+<h3>Basic usage</h3>
+
+<p>Add the plugin to the build plugins section of your pom.xml.</p>
+
+<source><![CDATA[
+<plugin>
+   <groupId>com.aleax</groupId>
+   <artifactId>blight-maven-plugin</artifactId>
+   <version>0.0.1</version>
+   <configuration>
+      <packageNames>
+         <!-- Include your template packages here -->
+         <param>example.mycompany.myapp.packages</param>
+      </packageNames>
+   </configuration>
+   <executions>
+      <execution>
+         <goals>
+            <goal>compileTemplates</goal>
+         </goals>
+      </execution>
+   </executions>
+</plugin>
+]]></source>
+
+<p>By default, the plugin is executed in Maven's process-classes phase, 
+after the main application classes have been compiled. To allow on-demand
+compilation during development, add <code>&lt;phase&gt;pre-package&lt;/phase&gt;</code>
+to the <code>execution</code>element.</p>
+
+<h3>Plugin options</h3>
+
+<p>
+The bLight Maven plugin can be configured using the parameters below. <em>Note:</em> Only the <code>packageNames</code> parameter is required, the rest are optional.
+</p>
+
+<table>
+	<tr>
+		<th>Parameter name</th>
+		<th>Description</th>
+		<th>Default value</th>
+		<th>Required</th>
+	</tr>
+	<tr>
+		<td>packageNames</td>
+		<td>A list of package names to compile.</td>
+		<td>-</td>
+		<td><b>Yes</b></td>
+	</tr>
+	<tr>
+		<td>Source</td>
+		<td>The Java source level</td>
+		<td>Default Maven compiler source level</td>
+		<td>No</td>
+	</tr>
+	<tr>
+		<td>Target</td>
+		<td>The Java target level</td>
+		<td>Default Maven compiler target level</td>
+		<td>No</td>
+	</tr>
+	<tr>
+		<td>compiledTemplateDir</td>
+		<td>The directory to place compiled templates source code.</td>
+		<td>target/compiled-templates</td>
+		<td>No</td>
+	</tr>
+	<tr>
+		<td>templateMethod</td>
+		<td>The name of the template method. Only this method will have comments replaced with executable code.</td>
+		<td>execute</td>
+		<td>No</td>
+	</tr>
+	<tr>
+		<td>commentReplacementPrefix</td>
+		<td>The prefix to insert before each comment replacement.</td>
+		<td>write(</td>
+		<td>No</td>
+	</tr>
+	<tr>
+		<td>commentReplacementSuffix</td>
+		<td>The suffix to insert before each comment replacement.</td>
+		<td>);</td>
+		<td>No</td>
+	</tr>
+	<tr>
+		<td>extraCode</td>
+		<td>Extra code to insert into the compiled template. This will be executed in an initialiser block.</td>
+		<td>setCompiled(true);</td>
+		<td>No</td>
+	</tr>
+</table>
+
+    </section>
+
+  </body>
+
+</document>
+  

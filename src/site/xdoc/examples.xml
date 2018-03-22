@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Examples</title>
+    <author email="email@invalid">Yiannis Paschalidis</author>
+  </properties>
+
+  <body>
+
+    <!--  Section uses an H2, so use H3 and below for sub-sections. -->
+    <section name="bLight examples">
+
+<p>The example applications below are included in the bLight binary distribution, or can be downloaded from here.</p>
+
+<table>
+	<tr>
+		<th>Link</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td><a href="blight-example-ant-helloworld-src.zip">blight-example-ant-helloworld-src.zip</a></td>
+		<td>Minimal "Hello World" application built with Ant. Runs from the command-line.</td>
+	</tr>
+	<tr>
+		<td><a href="blight-example-maven-helloworld-src.zip">blight-example-maven-helloworld-src.zip</a></td>
+		<td>Minimal "Hello World" application built with Maven. Runs from the command-line.</td>
+	</tr>
+	<tr>
+		<td><a href="blight-example-maven-webapp-src.zip">blight-example-maven-webapp-src.zip</a></td>
+		<td>Minimal web application built with Maven. Produces a deployable WAR. Also contains a launcher which can run the app from within an IDE.</td>
+	</tr>
+</table>
+
+    </section>
+
+  </body>
+
+</document>
+  

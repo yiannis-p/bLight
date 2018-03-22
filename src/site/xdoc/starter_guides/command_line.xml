@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>other build systems</title>
+    <author email="email@invalid">Yiannis Paschalidis</author>
+  </properties>
+
+  <body>
+
+    <!--  Section uses an H2, so use H3 and below for sub-sections. -->
+    <section name="Getting started - Command-line">
+
+<p>This guide shows how to get a simple "Hello World" bLight application
+up and running using command-line tools. For simplicity, this example is a 
+command-line application which runs and template and then exits. It is
+not an example of good practice, as it omits nicities such as error handling,
+logging and unit testing. The complete source code and configuration discussed 
+here can be downloaded together in a single 
+<a href="../blight-example-cmdline-helloworld-src.zip">zip file</a>.</p>
+
+<p>bLight includes a command-line interface to the template compiler to allow
+integration with other build systems. An example built using the command-line
+is shown below.</p>
+
+<p>Templates should be placed together with your other Java code under
+<code>src/main/java</code>. It is recommended that templates are placed in 
+their own package. In the example, the application consists of the 
+main <code>MyApp</code> application class, and a single template
+named <code>MyTemplate</code>. The <code>lib</code> directory will eventually
+contain the libraries required to build and run the application.</p>
+ 
+<source>
+/
+|-- lib/
+`-- src/
+    `-- main/java/example/mycompany/myapp/
+        |-- MyApp.java
+        `-- templates/
+            `-- MyTemplate.java
+</source>
+
+<h3>Java code</h3>
+
+<p>The bLight Java API is quite small. There are only two classes which you need to be familiar
+with - <code>AbstractTemplate</code> which is the default parent class for all templates, and  
+the <code>TemplateManager</code> which executes templates.</p>
+
+<h4>MyApp.java</h4>
+
+<p>The application code creates a template, sets the output to System.out and executes the template.
+<em>Note</em>: While it is possible to execute templates directly, it is recommended to always use
+the TemplateManager. This allows for dynamic template compilation (see below) during development 
+without requiring an application restart each time a template is changed.</p>
+
+<source>
+package example.mycompany.myapp;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import com.aleax.blight.TemplateException;
+import com.aleax.blight.TemplateManager;
+
+import example.mycompany.myapp.templates.MyTemplate;
+
+public class MyApp
+{
+    public static void main(final String[] args) throws TemplateException, IOException
+    {
+        // Create a new template
+        MyTemplate template = new MyTemplate();
+        
+        // Configure the template to send its output to System.out
+        PrintWriter out = new PrintWriter(System.out);
+        template.setOutput(out);
+
+        // Compile and execute the template
+        TemplateManager.execute(template);
+
+        // Ensure the output is written before the app terminates
+        out.flush();
+    }
+}
+</source>
+
+<h4>MyTemplate.java</h4>
+
+<p>The template extends AbstractTemplate and must implement the <code>execute()</code> method.
+Any comments within this method are written to the template output when the method is called
+on the compiled template. The example template also contains a single setter to pass in the 
+customer details to include in the template output.</p>
+
+<source>
+package example.mycompany.myapp.templates;
+
+import java.io.IOException;
+import com.aleax.blight.AbstractTemplate;
+
+public class MyTemplate extends AbstractTemplate
+{
+    @Override
+    public void execute() throws IOException
+    {
+        /*Hello World!*/
+    }
+}
+</source>
+
+<h3>Libraries</h3>
+
+<p>Download and unpack the bLight binary distribution into the lib directory.
+The lib directory structure should end up with the following:</p>
+
+<source>
+lib/
+`-- blight-dist/
+    |-- LICENSE.txt
+    `-- doc/
+    `-- lib/
+    |   |-- compiler-libs/
+    |   |-- blight-compiler.jar
+    |   `-- blight-core.jar
+    `-- tools/
+        |-- blight-ant-task.jar
+        |-- blight-compiler-standalone.jar
+        `-- blight-maven-plugin.jar
+</source>
+
+<h3>Build</h3>
+
+<p>For basic use, bLight only requires a single library at runtime. 
+The blight-core.jar will need to be added to the class path which you 
+use to compile and run your project.</p>
+
+<p>bLight templates must be compiled before they can be used. For a production
+deployment, they should be pre-compiled using the bLight command-line tool.
+The basic steps are:</p>
+
+<ol>
+	<li>Compile the entire application. This ensures that everything is at least syntactically valid.</li>
+	<li>Run the bLight command-line compiler to pre-compile the templates.</li>
+	<li>Java compile the pre-compiled templates.</li>
+</ol>
+
+<p>An example of how to do this is shown below.</p>
+
+<source><![CDATA[
+#!/bin/bash
+javac -cp lib/blight-dist/lib/blight-core.jar -sourcepath src/main/java -d target/classes 
+java -cp tools/blight-compiler-standalone.jar com.aleax.blight.compiler.BatchCompiler -s src/main/java -p example.mycompany.myapp.templates -o target/compiled-templates
+javac -cp lib/blight-dist/lib/blight-core.jar:target/classes -sourcepath target/compiled-templates -d target/classes
+]]></source>
+
+<p>The application can then be run with the following:</p>
+
+<source>
+#!/bin/bash
+java -cp lib/blight-dist/lib/blight-core.jar:target/classes example.mycompany.myapp.MyApp
+</source>
+
+<h3>Enabling dynamic template compilation</h3>
+
+<p>Templates can be compiled at run-time for faster development without requiring an application 
+restart after each change. To enable this functionality, the blight-compiler and template java
+sources must be added to the classpath, and the templates must not be pre-compiled until the
+application is packaged.</p>
+
+<p>The compilation script just needs the template compilation steps commented-out:</p>
+
+<source><![CDATA[
+#!/bin/bash
+javac -cp lib/blight-dist/lib/blight-core.jar -sourcepath src/main/java -d target/classes 
+#java -cp lib/blight-compiler-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.aleax.blight.compiler.BatchCompiler -s src/main/java -p example.mycompany.myapp.templates -o target/compiled-templates
+#javac -cp lib/blight-dist/lib/blight-core.jar:target/classes -sourcepath target/compiled-templates -d target/classes
+]]></source>
+
+<p>The application can then be run with the following:</p>
+
+<source>
+#!/bin/bash
+java -cp lib/blight-dist/lib/blight-core.jar:tools/blight-compiler-standalone.jar:src/main/java:target/classes example.mycompany.myapp.MyApp
+</source>
+
+    </section>
+
+  </body>
+
+</document>
+  

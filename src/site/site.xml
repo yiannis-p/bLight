@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="bLight">
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>1.4</version>
+  </skin>
+  
+  <custom>
+    <fluidoSkin>
+      <topBarEnabled>false</topBarEnabled>
+      <sideBarEnabled>true</sideBarEnabled>
+    </fluidoSkin>
+  </custom>
+    
+  <body>
+  
+    <menu name="Main">
+      <item name="Introduction" href="index.html"/>
+    </menu>
+
+    <menu name="Getting started">
+      <item name="Maven projects" href="starter_guides/maven.html"/>
+      <item name="Ant builds" href="starter_guides/ant.html"/>
+      <item name="Command-line" href="starter_guides/command_line.html"/>
+    </menu>
+
+    <menu name="User documentation">
+      <item name="User guide" href="user_guide.html"/>
+      <item name="API docs" href="javadoc/index.html"/>
+      <item name="Examples" href="examples.html"/>
+      <item name="Maven plugin" href="maven_plugin_ref.html"/>
+      <item name="Ant task" href="ant_task_ref.html"/>
+      <item name="Command-line tool" href="commandline_ref.html"/>      
+      <item name="FAQ" href="faq.html"/>
+    </menu>
+
+    <menu ref="reports"/>
+
+  </body>
+  
+  <publishDate position="bottom"/>
+  <version position="bottom"/>
+  
+</project>

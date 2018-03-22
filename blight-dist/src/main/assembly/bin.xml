@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+
+	<id>bin</id>
+
+	<formats>
+		<format>zip</format>
+	</formats>
+
+	<files>
+
+		<file>
+			<source>${project.build.directory}/lib/blight-core-${project.version}.jar</source>
+			<destName>blight-core.jar</destName>
+			<outputDirectory>/lib</outputDirectory>
+		</file>
+
+		<file>
+			<source>${project.build.directory}/lib/blight-compiler-${project.version}.jar</source>
+			<destName>blight-compiler.jar</destName>
+			<outputDirectory>/lib</outputDirectory>
+		</file>
+
+		<file>
+			<source>${project.build.directory}/lib/blight-compiler-${project.version}-jar-with-dependencies.jar</source>
+			<destName>blight-compiler-standalone.jar</destName>
+			<outputDirectory>/tools</outputDirectory>
+		</file>
+
+		<file>
+			<source>${project.build.directory}/lib/blight-ant-task-${project.version}-jar-with-dependencies.jar</source>
+			<destName>blight-ant-task.jar</destName>
+			<outputDirectory>/tools</outputDirectory>
+		</file>
+
+		<file>
+			<source>${project.build.directory}/lib/blight-maven-plugin-${project.version}.jar</source>
+			<destName>blight-maven-plugin.jar</destName>
+			<outputDirectory>/tools</outputDirectory>
+		</file>
+
+		<file>
+			<source>../LICENSE.txt</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+
+	</files>
+
+	<fileSets>
+
+		<fileSet>
+			<directory>../blight-compiler/target/dist-libs</directory>
+			<outputDirectory>/lib/compiler-libs</outputDirectory>
+		</fileSet>
+
+		<fileSet>
+			<outputDirectory>/</outputDirectory>
+			<directory>../</directory>
+			<includes>
+				<include>Readme.txt</include>
+				<include>LICENSE.txt</include>
+			</includes>
+		</fileSet>
+
+		<fileSet>
+			<directory>../target/dist-site</directory>
+			<outputDirectory>/doc</outputDirectory>
+		</fileSet>
+
+	</fileSets>
+  
+</assembly>

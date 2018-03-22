@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Maven integration</title>
+    <author email="email@invalid">Yiannis Paschalidis</author>
+  </properties>
+
+  <body>
+
+    <!--  Section uses an H2, so use H3 and below for sub-sections. -->
+    <section name="Getting started - Maven">
+
+<p>This guide shows how to get a simple "Hello World" bLight application
+up and running using Apache Maven. For simplicity, this example is a 
+command-line application which runs and template and then exits. It is
+not an example of good practice, as it omits nicities such as error handling,
+logging and unit testing. The complete source code and configuration discussed 
+here can be downloaded together in a single 
+<a href="../blight-example-maven-helloworld-src.zip">zip file</a>.</p>
+
+<p>Templates should be placed together with your other Java code under
+<code>src/main/java</code>. It is recommended that templates are placed in 
+their own package. In the example, the application consists of the 
+main <code>MyApp</code> application class, and a single template
+named <code>MyTemplate</code>. The <code>pom.xml</code> is a standard
+Maven POM.</p>
+ 
+<source>
+/
+|-- pom.xml
+`-- src/
+    `-- main/java/example/mycompany/myapp/
+        |-- MyApp.java
+        `-- templates/
+            `-- MyTemplate.java
+</source>
+
+<h3>Java code</h3>
+
+<p>The bLight Java API is quite small. There are only two classes which you need to be familiar
+with - <code>AbstractTemplate</code> which is the default parent class for all templates, and  
+the <code>TemplateManager</code> which executes templates.</p>
+
+<h4>MyApp.java</h4>
+
+<p>The application code creates a template, sets the output to System.out and executes the template.
+<em>Note</em>: While it is possible to execute templates directly, it is recommended to always use
+the TemplateManager. This allows for dynamic template compilation (see below) during development 
+without requiring an application restart each time a template is changed.</p>
+
+<source>
+package example.mycompany.myapp;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import com.aleax.blight.TemplateException;
+import com.aleax.blight.TemplateManager;
+
+import example.mycompany.myapp.templates.MyTemplate;
+
+public class MyApp
+{
+    public static void main(final String[] args) throws TemplateException, IOException
+    {
+        // Create a new template
+        MyTemplate template = new MyTemplate();
+        
+        // Configure the template to send its output to System.out
+        PrintWriter out = new PrintWriter(System.out);
+        template.setOutput(out);
+
+        // Compile and execute the template
+        TemplateManager.execute(template);
+
+        // Ensure the output is written before the app terminates
+        out.flush();
+    }
+}
+</source>
+
+<h4>MyTemplate.java</h4>
+
+<p>The template extends AbstractTemplate and must implement the <code>execute()</code> method.
+Any comments within this method are written to the template output when the method is called
+on the compiled template. The example template also contains a single setter to pass in the 
+customer details to include in the template output.</p>
+
+<source>
+package example.mycompany.myapp.templates;
+
+import java.io.IOException;
+import com.aleax.blight.AbstractTemplate;
+
+public class MyTemplate extends AbstractTemplate
+{
+    @Override
+    public void execute() throws IOException
+    {
+        /*Hello World!*/
+    }
+}
+</source>
+
+<h3>Maven build configuration</h3>
+
+<h4>Dependencies</h4>
+
+<p>For basic use, bLight only requires a single Maven dependency at runtime. 
+Add the following dependency to your project's dependencies.</p>
+
+<source><![CDATA[
+<!-- Core bLight dependency required for both testing and deployment -->
+<dependency>
+   <groupId>com.aleax</groupId>
+   <artifactId>blight-core</artifactId>
+   <version>0.0.1</version>
+</dependency>
+]]></source>
+
+<h4>Build plugin</h4>
+
+<p>bLight templates must be compiled before they can be used. For a production
+deployment, they should be pre-compiled using the bLight Maven plugin. Add the
+plugin below to your project's build plugins. By default, the plugin is executed 
+in Maven's process-classes phase, after the main application classes have been 
+compiled.</p>
+
+<source><![CDATA[
+<!-- Always precompile bLight templates during a build -->
+<plugin>
+   <groupId>com.aleax</groupId>
+   <artifactId>blight-maven-plugin</artifactId>
+   <version>0.0.1</version>
+   <configuration>
+      <packageNames>
+         <!-- Replace this with a list of the packages from your app -->
+         <param>example.mycompany.myapp.packages</param>
+      </packageNames>
+   </configuration>
+   <executions>
+      <execution>
+         <goals>
+            <goal>compileTemplates</goal>
+         </goals>
+      </execution>
+   </executions>
+</plugin>
+]]></source>
+
+<h3>Enabling dynamic template compilation</h3>
+
+<p>Templates can be compiled at run-time for faster development without requiring an application 
+restart after each change. To enable this functionality, the blight-compiler and template java
+sources must be added to the classpath, and the templates must not be pre-compiled until the
+application is packaged.</p>
+
+<p>You will need to add the bLight compiler to your application dependencies. The scope should be set to
+either <code>test</code> or <code>provided</code> to avoid the dependency being added to the packaged 
+application. Use scope "test" if you will only be running tests, or "provided" for running both tests 
+and the main application from within your IDE.</p>
+
+<source><![CDATA[
+<!-- For on-demand bLight template compilation when running the app in an IDE. -->
+<dependency>
+   <groupId>com.aleax</groupId>
+   <artifactId>blight-compiler</artifactId>
+   <version>0.0.1</version>
+   <!-- Use scope "provided" or "test" only. -->
+   <scope>provided</scope>
+</dependency>
+]]></source>
+
+<p>Two changes are required in the Maven POM. In the build plugins, the template java source must be
+added to the classpath so that it can be compiled at run-time. The blight-maven-plugin is also changed
+to run in the pre-package phase, as we don't want the templates to be pre-compiled when developing/testing
+the application.</p>
+
+<source><![CDATA[
+<!-- 
+The .java template sources must be added to the classpath to allow 
+on-demand compilation when running the application in an IDE. 
+-->
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-resources-plugin</artifactId>
+    <version>2.6</version>
+    <executions>
+      <execution>
+        <id>additional-resources</id>
+        <phase>process-test-resources</phase>
+        <goals>
+          <goal>copy-resources</goal>
+        </goals>
+        <configuration>
+          <!-- 
+          The templates are copied to the test output directory as we only need on-demand compilation for testing.
+          This also ensures that the sources are not accidentally included in the deployable artefacts. 
+          -->
+          <outputDirectory>${project.build.testOutputDirectory}/com/aleax/blight/example/webapp/templates</outputDirectory>
+          <resources>
+            <resource>
+              <directory>${project.basedir}/src/main/java/com/aleax/blight/example/webapp/templates</directory>
+            </resource>
+          </resources>
+        </configuration>
+      </execution>
+    </executions>
+</plugin>
+
+<!-- 
+Pre-compile the templates only when packaging up the application.
+Changes made in an IDE will not be picked up if templates are pre-compiled.
+ -->
+<plugin>
+   <groupId>com.aleax</groupId>
+   <artifactId>blight-maven-plugin</artifactId>
+   <version>${project.version}</version>
+   <configuration>
+      <packageNames>
+         <param>com.aleax.blight.example.webapp.templates</param>
+      </packageNames>
+   </configuration>
+   <executions>
+      <execution>
+         <!-- This is the key change -->
+         <phase>pre-package</phase>
+         <goals>
+            <goal>compileTemplates</goal>
+         </goals>
+      </execution>
+   </executions>
+</plugin>
+]]></source>
+
+    </section>
+
+  </body>
+
+</document>
+  

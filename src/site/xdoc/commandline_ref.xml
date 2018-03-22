@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Command-line compiler reference</title>
+    <author email="email@invalid">Yiannis Paschalidis</author>
+  </properties>
+
+  <body>
+
+    <!--  Section uses an H2, so use H3 and below for sub-sections. -->
+    <section name="bLight command-line compiler">
+
+<p>The bLight command-line compiler is used to pre-compile templates.</p>
+
+<h3>Basic usage</h3>
+
+<p>The compiler can be run directly using the jar file from the bLight binary distribution.</p>
+
+<source><![CDATA[
+#!/bin/bash
+java -cp lib/blight-compiler-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.aleax.blight.compiler.BatchCompiler -s src/main/java -p example.mycompany.myapp.templates -o target/compiled-templates
+]]></source>
+
+<h3>Compiler options</h3>
+
+<p>Running the compiler without any command-line arguments will print out the usage instructions and exit.</p>
+
+<source><![CDATA[
+Basic usage:
+
+    java com.aleax.blight.compiler.BatchCompiler -s <source dirs...> -p <package names...> -o <output dir>
+
+Optional compiler settings:
+
+    -method <method name>   -- The template method name, default "execute"
+    -prefix <prefix>        -- replacement prefix, default "write("
+    -suffix <suffix>        -- replacement suffix, default ");"
+    -code <code>            -- extra code to insert, default "setCompiled(true);"
+]]></source>
+
+    </section>
+
+  </body>
+
+</document>
+  
