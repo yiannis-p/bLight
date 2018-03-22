@@ -2,32 +2,32 @@
 
 <!-- 
 *******************************************************************************
-* template-ant.xml                                                            *
+* blight-ant.xml                                                              *
 *******************************************************************************
-* Defines the Apache ANT (http://ant.apache.org)  library for the template    *
-* compiler. Refer to the typedef/macro definitions below for example usage.   *
+* Defines the Apache ANT (http://ant.apache.org) library for the bLight       *
+* template compiler. Refer to the typedef/macro definitions below for example *
+* usage.                                                                      *
 *                                                                             *
-* Author: Yiannis                                                             *
+* Author: Yiannis Paschalidis                                                 *
 ******************************************************************************* 
 -->
 
 <antlib>
 
     <!-- ***************************************************************
-    * This compiles the templates to Java source.
+    * This compiles the bLight templates to Java source.
     *
     * EXAMPLE:
     *
     *  <typedef
     *      resource  ="blight-ant.xml"
-    *      classpath ="target/blight-ant-task-0.0.1-SNAPSHOT-jar-with-dependencies.jar"/>
+    *      classpath ="blight-ant-task.jar"/>
     *
     *  <blight.compileTemplates
     *      outputDir="${basedir}/target/compiled-templates">
     *
     *  	   <sourceDir>${basedir}/src/main/java</sourceDir>
-    *      <package>com.mycompany.myapp.mytemplatepackage</package>
-    *      <package>com.mycompany.myapp.mytemplatepackage.subpackage</package>
+    *      <package>example.mycompany.myapp.templates</package>
     *
     *   </blight.compileTemplates>
     *

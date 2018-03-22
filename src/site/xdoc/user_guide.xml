@@ -13,14 +13,12 @@
     <!--  Section uses an H2, so use H3 and below for sub-sections. -->
     <section name="bLight User guide">
 
-<h3>Heading</h3>
+<h3>TODO</h3>
 
-<p>
-Usage / limitations
-</p>
-<p>
-Pre or on-demand compilation
-</p>
+<ul>
+	<li>Usage / limitations</li>
+	<li>Pre or on-demand compilation</li>
+</ul>
 
     </section>
 

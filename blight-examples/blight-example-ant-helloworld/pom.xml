@@ -19,6 +19,7 @@
 	<build>
 		<plugins>
 
+			<!-- Set up a mock binary distribution in the target directory -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>

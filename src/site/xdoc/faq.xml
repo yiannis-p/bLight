@@ -11,15 +11,14 @@
   <body>
 
     <!--  Section uses an H2, so use H3 and below for sub-sections. -->
-    <section name="Introduction">
+    <section name="Frequently Asked Questions">
 
-<h3>Frequently Asked Questions</h3>
+<h3>TODO</h3>
 
-<p>
-Talk on avoiding pitfalls such as breaking MVC by embedding too much logic inside view.
- - Can do this just as easily in most other templating languages. 
- - i18n.
-</p>
+<ul>
+	<li>breaking MVC by embedding too much logic inside view (can do this just as easily in most other templating languages)</li>
+	<li>i18n</li>
+</ul> 
 
     </section>
 
