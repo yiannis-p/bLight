@@ -17,6 +17,7 @@
   
     <menu name="Main">
       <item name="Introduction" href="index.html"/>
+      <item name="Download" href="https://github.com/yiannis-p/bLight/"/>
     </menu>
 
     <menu name="Getting started">
