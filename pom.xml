@@ -8,22 +8,10 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>bLight parent</name>
-	
-	<description>
-		bLight is a minimalistic compile-time type-safe templating mechanism for use in Java applications. 
-	</description>
-
-    <developers>
-        <developer>
-            <name>Yiannis Paschalidis</name>
-            <roles>
-                <role>Project Admin</role>
-                <role>Developer</role>
-            </roles>
-            <timezone>+10</timezone>
-        </developer>
-    </developers>
+	<name>bLight parent</name>	
+	<description>bLight is a minimalistic compile-time type-safe templating mechanism for use in Java applications.</description>
+	<url>http://blight.aleax.com/</url>
+    <inceptionYear>2018</inceptionYear>
 
     <licenses>
         <license>
@@ -34,7 +22,24 @@
         </license>
     </licenses>
 
-    <inceptionYear>2018</inceptionYear>
+    <developers>
+        <developer>
+            <name>Yiannis Paschalidis</name>
+            <roles>
+                <role>Project Admin</role>
+                <role>Developer</role>
+            </roles>
+            <organization>GitHub</organization>
+            <organizationUrl>https://github.com/yiannis-p</organizationUrl>
+            <timezone>+10</timezone>
+        </developer>
+    </developers>
+
+	<scm>
+		<connection>scm:git:git://github.com/yiannis-p/bLight.git</connection>
+		<developerConnection>scm:git:ssh://github.com:yiannis-p/bLight.git</developerConnection>
+		<url>http://github.com/yiannis-p/bLight/</url>
+	</scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -44,16 +49,6 @@
 	
 		<plugins>			
 			
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.0</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-
 			<!-- Generates a cut-down site for the distribution zip -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -124,7 +119,65 @@
 			
 		</plugins>
 		
+		<pluginManagement>
+			<plugins>
+			
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.6.0</version>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
+			
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>2.0.4</version>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.0.0</version>
+					<executions>
+						<execution>
+							<phase>package</phase>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				
+			</plugins>
+		</pluginManagement>
+		
 	</build>
+	
+	<dependencyManagement>
+		<dependencies>
+		
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.12</version>
+				<scope>test</scope>
+			</dependency>
+		
+		</dependencies>
+	</dependencyManagement>
 
 	<profiles>
 		<profile>

@@ -15,7 +15,7 @@ public interface JavaCompiler
      * @param className the fully qualified class name
      * @param code the code to compile
      * @return The compiled class, including any inner classes
-     * @throws CompilerException Thrown when a compiler exception occurs
+     * @throws TemplateException Thrown when a compiler exception occurs
      */
     List<Class<?>> compile(String className, String code) throws TemplateException;
 }
