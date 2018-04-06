@@ -25,6 +25,24 @@ public class DefaultTemplateCompilerTest
     }
 
     /**
+     * Blank template with no content. Should strip the comment but not output anything.
+     */
+    @Test
+    public void testEmptyComment()
+    {
+        testTemplate("empty_comment.java", "empty_comment_compiled.java");
+    }
+
+    /**
+     * Template with comments containing only whitespace.
+     */
+    @Test
+    public void testWhitespaceComments()
+    {
+        testTemplate("whitespace_comments.java", "whitespace_comments_compiled.java");
+    }
+    
+    /**
      * Template with content but no embedded markup. Should return original source.
      */
     @Test

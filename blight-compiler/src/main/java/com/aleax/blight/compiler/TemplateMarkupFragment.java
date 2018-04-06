@@ -1,7 +1,5 @@
 package com.aleax.blight.compiler;
 
-import com.aleax.blight.util.Util;
-
 /**
  * Represents a fragment of mark-up in a template file.
  * 
@@ -28,13 +26,6 @@ public final class TemplateMarkupFragment
     {
         this.id = id;
 
-        if (Util.isBlank(markup))
-        {
-            literal = markup == null ? "" : markup;
-            lineCount = 0;
-            return;
-        }
-
         final int len = markup.length();
         int lineFeedCount = 0;
         StringBuilder buf = new StringBuilder(markup.length());
@@ -50,6 +41,10 @@ public final class TemplateMarkupFragment
                 case '"':
                     buf.append("\\\"");
                     break;
+
+                case '\t':
+                   buf.append("\\t");
+                   break;
 
                 case '\r':
                     buf.append("\\r");

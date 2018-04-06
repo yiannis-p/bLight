@@ -107,6 +107,12 @@ public class DefaultTemplateCompiler implements TemplateCompiler
 
         for (BlockComment comment : comments)
         {
+            if (comment.getLength() < 5)
+            {
+               // Ignore empty comments.
+               continue;
+            }
+           
             int start = comment.getStartPosition();
             int end = start + comment.getLength();
 
@@ -144,20 +150,27 @@ public class DefaultTemplateCompiler implements TemplateCompiler
             int end = comment.getStartPosition() + comment.getLength();
             TemplateMarkupFragment fragment = fragmentsByComment.get(comment);
 
-            buf.append(source.substring(lastCommentEnd, start))
-               .append(settings.getCommentReplacementPrefix())
-               .append(fragment.getId())
-               .append(settings.getCommentReplacementSuffix());
-
-            // Insert blank lines in multi-line comments to make sure line numbers still match up
-            if (fragment.getLineCount() > 1)
+            if (fragment == null)
             {
-                for (int i = 1; i < fragment.getLineCount(); i++)
-                {
-                    buf.append(eol);
-                }
+               buf.append(source.substring(lastCommentEnd, start));
             }
-
+            else
+            {
+               buf.append(source.substring(lastCommentEnd, start))
+                  .append(settings.getCommentReplacementPrefix())
+                  .append(fragment.getId())
+                  .append(settings.getCommentReplacementSuffix());
+               
+               // Insert blank lines in multi-line comments to make sure line numbers still match up
+               if (fragment.getLineCount() > 1)
+               {
+                  for (int i = 1; i < fragment.getLineCount(); i++)
+                  {
+                     buf.append(eol);
+                  }
+               }
+            }
+            
             lastCommentEnd = end;
         }
 
