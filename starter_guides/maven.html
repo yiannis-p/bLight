@@ -369,7 +369,7 @@ and the main application from within your IDE.</p>
 
 <p>Two changes are required in the Maven POM. In the build plugins, the template java source must be
 added to the classpath so that it can be compiled at run-time. The blight-maven-plugin is also changed
-to run in the pre-package phase, as we don't want the templates to be pre-compiled when developing/testing
+to run in the prepare-package phase, as we don't want the templates to be pre-compiled when developing/testing
 the application.</p>
 
 
@@ -421,7 +421,7 @@ Changes made in an IDE will not be picked up if templates are pre-compiled.
    &lt;executions&gt;
       &lt;execution&gt;
          &lt;!-- This is the key change --&gt;
-         &lt;phase&gt;pre-package&lt;/phase&gt;
+         &lt;phase&gt;prepare-package&lt;/phase&gt;
          &lt;goals&gt;
             &lt;goal&gt;compileTemplates&lt;/goal&gt;
          &lt;/goals&gt;
