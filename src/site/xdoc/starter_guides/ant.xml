@@ -206,22 +206,6 @@ restart after each change. To enable this functionality, the blight-compiler and
 sources must be added to the classpath, and the templates must not be pre-compiled until the
 application is packaged.</p>
 
-<p>You will need to add the bLight compiler to your application dependencies. The scope should be set to
-either <code>test</code> or <code>provided</code> to avoid the dependency being added to the packaged 
-application. Use scope "test" if you will only be running tests, or "provided" for running both tests 
-and the main application from within your IDE.</p>
-
-<source><![CDATA[
-   <!-- For on-demand bLight template compilation when running the app in an IDE. -->
-   <dependency>
-      <groupId>com.aleax</groupId>
-      <artifactId>blight-compiler</artifactId>
-      <version>0.0.1</version>
-      <!-- Use scope "provided" or "test" only. -->
-      <scope>provided</scope>
-   </dependency>
-]]></source>
-
 <p>Two changes are required in the build xml. The bLight compiler and template Java source must 
 be added to the classpath so that templates can be compiled at run-time. The bLight Ant task is moved into 
 run in a separate target, as we don't want the templates to be pre-compiled when developing/testing 

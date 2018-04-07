@@ -173,7 +173,7 @@ application is packaged.</p>
 <source><![CDATA[
 #!/bin/bash
 javac -cp lib/blight-dist/lib/blight-core.jar -sourcepath src/main/java -d target/classes 
-#java -cp lib/blight-compiler-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.aleax.blight.compiler.BatchCompiler -s src/main/java -p example.mycompany.myapp.templates -o target/compiled-templates
+#java -cp lib/blight-compiler-1.0.0-jar-with-dependencies.jar com.aleax.blight.compiler.BatchCompiler -s src/main/java -p example.mycompany.myapp.templates -o target/compiled-templates
 #javac -cp lib/blight-dist/lib/blight-core.jar:target/classes -sourcepath target/compiled-templates -d target/classes
 ]]></source>
 

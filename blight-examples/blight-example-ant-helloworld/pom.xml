@@ -4,7 +4,7 @@
 
 	<groupId>example.mycompany</groupId>	
 	<artifactId>blight-example-ant-helloworld</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	
 	<packaging>pom</packaging>
 
@@ -34,18 +34,18 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>com.aleax</groupId>
+									<groupId>com.aleax.blight</groupId>
 									<artifactId>blight-core</artifactId>
-									<version>0.0.1-SNAPSHOT</version>
+									<version>1.0.0</version>
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${project.build.directory}/lib</outputDirectory>
 									<destFileName>blight-core.jar</destFileName>
 								</artifactItem>
 								<artifactItem>
-									<groupId>com.aleax</groupId>
+									<groupId>com.aleax.blight</groupId>
 									<artifactId>blight-ant-task</artifactId>
-									<version>0.0.1-SNAPSHOT</version>
+									<version>1.0.0</version>
 									<classifier>jar-with-dependencies</classifier>
 									<type>jar</type>
 									<overWrite>true</overWrite>

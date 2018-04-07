@@ -4,7 +4,7 @@
 
 	<groupId>example.mycompany</groupId>	
 	<artifactId>blight-example-maven-webapp</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	
 	<packaging>war</packaging>
 
@@ -62,7 +62,7 @@
 			This allows dynamic compilation when debugging code within an IDE. 
 		    -->
 			<plugin>
-				<groupId>com.aleax</groupId>
+				<groupId>com.aleax.blight</groupId>
 				<artifactId>blight-maven-plugin</artifactId>
 				<version>${project.version}</version>
 				<configuration>
@@ -74,7 +74,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<phase>pre-package</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>compileTemplates</goal>
 						</goals>
@@ -89,16 +89,16 @@
 		
 		<!-- Core bLight dependency required for both testing and deployment -->
 		<dependency>
-			<groupId>com.aleax</groupId>
+			<groupId>com.aleax.blight</groupId>
 			<artifactId>blight-core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 
 		<!-- For dynamic compilation when running the test harness -->
 		<dependency>
-			<groupId>com.aleax</groupId>
+			<groupId>com.aleax.blight</groupId>
 			<artifactId>blight-compiler</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 			<scope>test</scope>
 		</dependency>
 

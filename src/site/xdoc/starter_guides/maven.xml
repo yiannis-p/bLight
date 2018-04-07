@@ -115,7 +115,7 @@ Add the following dependency to your project's dependencies.</p>
 <source><![CDATA[
 <!-- Core bLight dependency required for both testing and deployment -->
 <dependency>
-   <groupId>com.aleax</groupId>
+   <groupId>com.aleax.blight</groupId>
    <artifactId>blight-core</artifactId>
    <version>0.0.1</version>
 </dependency>
@@ -132,7 +132,7 @@ compiled.</p>
 <source><![CDATA[
 <!-- Always precompile bLight templates during a build -->
 <plugin>
-   <groupId>com.aleax</groupId>
+   <groupId>com.aleax.blight</groupId>
    <artifactId>blight-maven-plugin</artifactId>
    <version>0.0.1</version>
    <configuration>
@@ -166,7 +166,7 @@ and the main application from within your IDE.</p>
 <source><![CDATA[
 <!-- For on-demand bLight template compilation when running the app in an IDE. -->
 <dependency>
-   <groupId>com.aleax</groupId>
+   <groupId>com.aleax.blight</groupId>
    <artifactId>blight-compiler</artifactId>
    <version>0.0.1</version>
    <!-- Use scope "provided" or "test" only. -->
@@ -176,7 +176,7 @@ and the main application from within your IDE.</p>
 
 <p>Two changes are required in the Maven POM. In the build plugins, the template java source must be
 added to the classpath so that it can be compiled at run-time. The blight-maven-plugin is also changed
-to run in the pre-package phase, as we don't want the templates to be pre-compiled when developing/testing
+to run in the prepare-package phase, as we don't want the templates to be pre-compiled when developing/testing
 the application.</p>
 
 <source><![CDATA[
@@ -216,7 +216,7 @@ Pre-compile the templates only when packaging up the application.
 Changes made in an IDE will not be picked up if templates are pre-compiled.
  -->
 <plugin>
-   <groupId>com.aleax</groupId>
+   <groupId>com.aleax.blight</groupId>
    <artifactId>blight-maven-plugin</artifactId>
    <version>${project.version}</version>
    <configuration>
@@ -227,7 +227,7 @@ Changes made in an IDE will not be picked up if templates are pre-compiled.
    <executions>
       <execution>
          <!-- This is the key change -->
-         <phase>pre-package</phase>
+         <phase>prepare-package</phase>
          <goals>
             <goal>compileTemplates</goal>
          </goals>

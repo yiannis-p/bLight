@@ -4,7 +4,7 @@
 
 	<groupId>example.mycompany</groupId>	
 	<artifactId>blight-example-maven-helloworld</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	
 	<packaging>jar</packaging>
 
@@ -35,9 +35,9 @@
 			
 			<!-- For precompilation: Compile the templates -->
 			<plugin>
-				<groupId>com.aleax</groupId>
+				<groupId>com.aleax.blight</groupId>
 				<artifactId>blight-maven-plugin</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 				<configuration>
 					<packageNames>
 						<param>example.mycompany.myapp.templates</param>
@@ -61,9 +61,9 @@
 		
 		<!-- Core bLight dependency required for both testing and deployment -->
 		<dependency>
-			<groupId>com.aleax</groupId>
+			<groupId>com.aleax.blight</groupId>
 			<artifactId>blight-core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 
 	</dependencies>

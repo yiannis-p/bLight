@@ -21,7 +21,7 @@
 
 <source><![CDATA[
 #!/bin/bash
-java -cp lib/blight-compiler-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.aleax.blight.compiler.BatchCompiler -s src/main/java -p example.mycompany.myapp.templates -o target/compiled-templates
+java -cp lib/blight-compiler-1.0.0-jar-with-dependencies.jar com.aleax.blight.compiler.BatchCompiler -s src/main/java -p example.mycompany.myapp.templates -o target/compiled-templates
 ]]></source>
 
 <h3>Compiler options</h3>
