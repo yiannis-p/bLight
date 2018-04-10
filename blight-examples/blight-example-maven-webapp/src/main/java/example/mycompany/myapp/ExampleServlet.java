@@ -21,18 +21,6 @@ public class ExampleServlet extends HttpServlet
 {
     /** {@inheritDoc} */
     @Override
-    public void init() throws ServletException
-    {
-        super.init();
-
-        // Disable caching to demonstrate ability to
-        // edit templates in the IDE without requiring a restart
-        // This will negatively impact application performance.
-        TemplateManager.setCachingEnabled(false);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
         throws ServletException, IOException
     {

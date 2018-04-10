@@ -1,11 +1,15 @@
 package com.aleax.blight;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.JarURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +39,13 @@ import com.aleax.blight.util.Util;
  *
  * @author Yiannis Paschalidis
  */
-// TODO: cache invalidation
 public final class TemplateManager
 {
     /** A cache of dynamically compiled classes. */
-    private static final Map<Class<? extends AbstractTemplate>, Class<? extends AbstractTemplate>> TEMPLATE_CACHE = new HashMap<>();
+    private static final Map<Class<? extends AbstractTemplate>, CompiledTemplate> TEMPLATE_CACHE = new HashMap<>();
 
     /** Indicates whether template caching is enabled. */
-    private static boolean cachingEnabled = false;
+    private static boolean cachingEnabled = true;
 
     /** Prevent instantiation of this utility class. */
     private TemplateManager()
@@ -67,102 +70,46 @@ public final class TemplateManager
             }
             else
             {
-                Class<? extends AbstractTemplate> compiledTemplateClass = null;
-
+                CompiledTemplate compiledTemplate = null;
+                
                 if (cachingEnabled)
                 {
-                    compiledTemplateClass = TEMPLATE_CACHE.get(template.getClass());
-
-                    if (compiledTemplateClass == null)
+                    synchronized (TEMPLATE_CACHE)
                     {
-                        compiledTemplateClass = compile(template);
-                        TEMPLATE_CACHE.put(template.getClass(), compiledTemplateClass);
+                        compiledTemplate = TEMPLATE_CACHE.get(template.getClass());
+                        
+                        if (compiledTemplate == null || compiledTemplate.isExpired())
+                        {
+                            compiledTemplate = compile(template);
+                            TEMPLATE_CACHE.put(template.getClass(), compiledTemplate);
+                        }
                     }
                 }
                 else
                 {
-                    compiledTemplateClass = compile(template);
+                    compiledTemplate = compile(template);
                 }
-
-                AbstractTemplate compiledTemplate;
+                
+                AbstractTemplate compiledTemplateInstance;
                 
                 try
                 {
-                    compiledTemplate = compiledTemplateClass.newInstance();
+                    compiledTemplateInstance = compiledTemplate.compiledClass.newInstance();
+                    compiledTemplate.copyFields(template, compiledTemplateInstance);
                 }
-                catch (InstantiationException | IllegalAccessException e)
+                catch (InstantiationException e)
                 {
-                    throw new TemplateException("Failed to instantiate copied template", e);
+                    throw new TemplateException("Failed to instantiate compiled template", e);
                 }
-                
-                Exception copyResult = AccessController.doPrivileged(new PrivilegedAction<Exception>()
+                catch (IllegalAccessException e)
                 {
-                    @Override
-                    public Exception run()
-                    {
-                        try
-                        {
-                            copyFields(template, compiledTemplate);
-                        }
-                        catch (Exception e)
-                        {
-                            return e;
-                        }
-
-                        return null;
-                    }
-                });
-
-                if (copyResult != null)
-                {
-                    throw new TemplateException("Failed to populate template", copyResult);
+                    throw new TemplateException("Failed to populate compiled template", e);
                 }
 
                 // Reset the compiled flag which we've just accidentally cleared above
-                compiledTemplate.setCompiled(true);
-                compiledTemplate.execute();
+                compiledTemplateInstance.setCompiled(true);
+                compiledTemplateInstance.execute();
             }
-        }
-    }
-
-    /**
-     * Copies fields from one template to another.
-     *
-     * @param source the source template.
-     * @param dest the destination template.
-     * @throws Exception if there is any error copying fields.
-     */
-    private static void copyFields(final AbstractTemplate source, final AbstractTemplate dest) throws Exception
-    {
-        Class<?> sourceClass = source.getClass();
-        Class<?> destClass = dest.getClass();
-
-        // Have to loop to get fields from superclass as well.
-        while (sourceClass != null)
-        {
-            Field[] sourceFields = sourceClass.getDeclaredFields();
-            Field[] destFields = destClass.getDeclaredFields();
-
-            for (Field sourceField : sourceFields)
-            {
-                int mods = sourceField.getModifiers();
-                
-                if (!Modifier.isStatic(mods) && !Modifier.isFinal(mods))
-                {
-                    for (Field destField : destFields)
-                    {
-                        if (sourceField.getName().equals(destField.getName()))
-                        {
-                            sourceField.setAccessible(true);
-                            destField.setAccessible(true);
-                            destField.set(dest, sourceField.get(source));
-                        }
-                    }
-                }
-            }
-
-            sourceClass = sourceClass.getSuperclass();
-            destClass = destClass.getSuperclass();
         }
     }
 
@@ -173,7 +120,7 @@ public final class TemplateManager
      * @return the compiled template.
      * @throws TemplateException if compilation fails.
      */
-    private static Class<? extends AbstractTemplate> compile(final AbstractTemplate template) throws TemplateException
+    private static CompiledTemplate compile(final AbstractTemplate template) throws TemplateException
     {
         try
         {
@@ -202,7 +149,7 @@ public final class TemplateManager
             
             List<Class<?>> classes = javaCompiler.compile(packageName + '.' + templateClass.getSimpleName(), compiledTemplate);
             
-            return (Class<? extends AbstractTemplate>) classes.get(0);
+            return new CompiledTemplate(path, templateClass, (Class<? extends AbstractTemplate>) classes.get(0));
         }
         catch (Exception e)
         {
@@ -211,8 +158,7 @@ public final class TemplateManager
     }
 
     /**
-     * Sets whether template caching is enabled. Caching is disabled by default, as on-demand compilation is intended
-     * for local development only.
+     * Sets whether template caching is enabled. Caching is enabled by default.
      * 
      * @param cachingEnabled true to enable caching, false to disable.
      */
@@ -229,5 +175,151 @@ public final class TemplateManager
     public static boolean isCachingEnabled()
     {
         return cachingEnabled;
+    }
+
+    /**
+     * Cache entry for compiled templates.
+     */
+    private static final class CompiledTemplate
+    {
+        /** The original template class. */
+        private final Class<? extends AbstractTemplate>  originalClass;
+        
+        /** The original template class fields. */
+        private final Field[] originalFields;
+        
+        /** The compiled template class. */
+        private final Class<? extends AbstractTemplate>  compiledClass;
+        
+        /** The compiled template class fields. */
+        private final Field[] compiledFields;
+        
+        /** The file or jar archive containing the template source. */
+        private final File source;
+        
+        /** The timestamp for when this cache entry was created. */
+        private final long createTime = System.currentTimeMillis();
+
+        /**
+         * Creates a CompiledTemplate.
+         * 
+         * @param path the resource path for the source code.
+         * @param originalClass the original class.
+         * @param compiledClass the compiled class.
+         * 
+         * @throws TemplateException if the cached entry could not be created.
+         */
+        CompiledTemplate(final String path, final Class<? extends AbstractTemplate> originalClass, final Class<? extends AbstractTemplate> compiledClass) throws TemplateException
+        {
+            this.originalClass = originalClass;
+            this.compiledClass = compiledClass;
+            
+            // Find template source
+            try
+            {
+                URL resourceLocation = Thread.currentThread().getContextClassLoader().getResource(path);
+                File file = null;
+
+                if ("jar".equals(resourceLocation.getProtocol()))
+                {
+                    resourceLocation = ((JarURLConnection) resourceLocation.openConnection()).getJarFileURL();
+                }
+                
+                if ("file".equals(resourceLocation.getProtocol()))
+                {
+                    file = new File(resourceLocation.toURI());
+                }
+                
+                source = file;
+            }
+            catch (Exception e)
+            {
+                throw new TemplateException("Failed to determine template file path for: " + originalClass.getName(), e);
+            }
+            
+            // Map fields. Have to loop to get fields from superclass as well.
+            final List<Field> sourceList = new ArrayList<Field>();
+            final List<Field> destList = new ArrayList<Field>();
+            
+            TemplateException mappingResult = AccessController.doPrivileged(new PrivilegedAction<TemplateException>()
+            {
+                @Override
+                public TemplateException run()
+                {
+                    try
+                    {
+                        Class<?> sourceClass = originalClass;
+                        Class<?> destClass = compiledClass;
+                        
+                        while (sourceClass != null)
+                        {
+                            Field[] sourceFields = sourceClass.getDeclaredFields();
+                            Field[] destFields = destClass.getDeclaredFields();
+
+                            for (Field sourceField : sourceFields)
+                            {
+                                int mods = sourceField.getModifiers();
+                                
+                                if (!Modifier.isStatic(mods) && !Modifier.isFinal(mods))
+                                {
+                                    for (Field destField : destFields)
+                                    {
+                                        if (sourceField.getName().equals(destField.getName()))
+                                        {
+                                            sourceField.setAccessible(true);
+                                            destField.setAccessible(true);
+                                            sourceList.add(sourceField);
+                                            destList.add(destField);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            sourceClass = sourceClass.getSuperclass();
+                            destClass = destClass.getSuperclass();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        return new TemplateException("Failed to compile template", e);
+                    }
+
+                    return null;
+                }
+            });
+
+            if (mappingResult != null)
+            {
+                throw mappingResult;
+            }
+            
+            originalFields = sourceList.toArray(new Field[sourceList.size()]);
+            compiledFields = destList.toArray(new Field[destList.size()]);
+        }
+        
+        /**
+         * Copies fields from one template to another.
+         * 
+         * @param source the source template.
+         * @param dest the destination template.
+         * @throws IllegalAccessException if there are any errors copying fields.
+         */
+        void copyFields(final Object source, final Object dest) throws IllegalAccessException
+        {
+            for (int i = 0; i < originalFields.length; i++)
+            {
+                compiledFields[i].set(dest, originalFields[i].get(source));
+            }
+        }
+
+        /**
+         * Indicates whether the cached template has expired due to the source file changing.
+         * @return true if the cache entry has expired, false otherwise.
+         */
+        boolean isExpired()
+        {
+            return source != null && source.lastModified() > createTime;
+        }
     }
 }
