@@ -13,12 +13,72 @@
     <!--  Section uses an H2, so use H3 and below for sub-sections. -->
     <section name="Frequently Asked Questions">
 
-<h3>TODO</h3>
+		<!--====================================================-->
+		<h3>What is wrong with using stringly typed templates?</h3>
+		<!--====================================================-->
+	
+		<p>Stringly typed templates use String literals to access data structures. Top-level data structures are typically passed 
+		from Java code to the template processor as key-value pairs in a Map.</p> 
+		
+		<p>The first problem is run-time errors caused by human error. Developers can introduce bugs by:</p>
+		
+		<ul>
+			<li>mismatched identifiers in the Java code and Template mark-up for accessing top-level items</li>
+			<li>mismatches between Java method names used in the data structures and in the templates</li>
+			<li>template syntax errors</li>
+		</ul>
+			
+		<p>These kinds of errors can only be found at run-time. Hopefully this happens during automated or manual testing rather than in production.
+		The strong typing used in bLight templates eliminates this risk by having the Java compiler pick up these kinds of errors. 
+		Invalid templates will not compile, and therefore cannot be deployed.</p> 
+		
+		<p>The second problem with Stringly typed templates is decreased developer productivity due to inadequate tool support. bLight
+		templates offer the following advantages in Modern IDEs:</p> 
+		
+		<ul>
+			<li>Java context-sensitive assistance &amp; text auto-completion</li>
+			<li>Automated refactoring of templates when classes/methods are renamed.</li>
+			<li>Easy access to data structure Javadoc</li>
+		</ul>
+		
+		<!--==========================================-->
+		<h3>What output formats are supported?</h3>
+		<!--==========================================-->
+		
+		<p>bLight supports generation of any text output format, such as plain text, HTML, XML, email, etc. It is simple to extend 
+		<code>AbstractTemplate</code> to add output-specific productivity methods.</p>
 
-<ul>
-	<li>breaking MVC by embedding too much logic inside view (can do this just as easily in most other templating languages)</li>
-	<li>i18n</li>
-</ul> 
+		<!--============================================-->
+		<h3>Can I write re-usable template components?</h3>
+		<!--============================================-->
+		
+		<p>Yes - see <code>AbstractTemplate.include(AbstractTemplate)</code>.</p>
+
+		<p>How far you should go depends on your personal preference. For example, developers
+		coming from a web-development background may find it easier to visualise page structure 
+		if it is written in HTML rather than a collection of method calls. Common site header/footer
+		templates are probably a good start.</p>
+
+		<!--==================================================-->
+		<h3>Does bLight support internationalisation (i18n)?</h3>
+		<!--==================================================-->
+		
+		<p>
+			bLight does not directly support i18n, but the bLight AbstractTemplate is designed to be sub-classed
+			to add application-specific utility methods. For example, create an <code>i18n</code> utility method and replace:
+			<br/>&#160;&#160;&#160;<code>/*&lt;h1&gt;Welcome&lt;/h1&gt;*/</code>
+			<br/>with:
+			<br/>&#160;&#160;&#160;<code>/*&lt;h1&gt;*/i18n(AppMessages.WELCOME);/*&lt;/h1&gt;*/</code>.
+		</p>
+		
+		<!--====================================================================-->
+		<h3>Does bLight break MVC by placing too much logic inside the view?</h3>
+		<!--====================================================================-->
+	
+		<p>Not necessarily, but it is easier to fall into this trap than in other templating languages.
+		Other templating languages do still allow template mark-up to call Java code (other than the model beans),
+		but developers usually have to go out of their way to enable this. Peer reviews are recommended for junior 
+		developers to encourage good development practices.</p>
 
     </section>
 
