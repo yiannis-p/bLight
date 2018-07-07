@@ -96,8 +96,8 @@ buffered by default.</p>
  
 <h4>Flexible</h4>
 
-<p>Just as for most templating framworks, bLight supports generation of any text output format, 
-such as plain text, HTML, XML, email, etc. It is simple to add extend the template framework to add 
+<p>Just as for most templating frameworks, bLight supports generation of any text output format, 
+such as plain text, HTML, XML, email, etc. It is simple to extend the template framework to add 
 output-specific productivity methods. In addition, use of application utility classes is trivial, as 
 the Java templates can directly call the classes.</p>
 
