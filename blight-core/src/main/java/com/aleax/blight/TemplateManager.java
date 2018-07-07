@@ -147,9 +147,17 @@ public final class TemplateManager
                 throw new TemplateException("No java compiler found");
             }
             
-            List<Class<?>> classes = javaCompiler.compile(packageName + '.' + templateClass.getSimpleName(), compiledTemplate);
+            List<Class<?>> compiledClasses = javaCompiler.compile(packageName + '.' + templateClass.getSimpleName(), compiledTemplate);
             
-            return new CompiledTemplate(path, templateClass, (Class<? extends AbstractTemplate>) classes.get(0));
+            for (Class<?> clazz : compiledClasses)
+            {
+               if (templateClass.getName().equals(clazz.getName()))
+               {
+                  return new CompiledTemplate(path, templateClass, (Class<? extends AbstractTemplate>) clazz);
+               }
+            }
+            
+            throw new TemplateException("Failed to compile template: " + template + ": compiled class not found");
         }
         catch (Exception e)
         {

@@ -131,12 +131,6 @@ public class DefaultTemplateCompiler implements TemplateCompiler
             fragmentsByComment.put(comment, fragment);
         }
 
-        if (comments.isEmpty())
-        {
-            // Nothing to do
-            return source;
-        }
-
         String eol = Util.getEOLMarker(source);
 
         StringBuilder buf = new StringBuilder(source.length());

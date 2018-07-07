@@ -21,7 +21,7 @@ public class DefaultTemplateCompilerTest
     @Test
     public void testBlank()
     {
-        testTemplate("blank.java", "blank.java");
+        testTemplate("blank.java", "blank_compiled.java");
     }
 
     /**
@@ -43,12 +43,12 @@ public class DefaultTemplateCompilerTest
     }
     
     /**
-     * Template with content but no embedded markup. Should return original source.
+     * Template with content but no embedded markup.
      */
     @Test
     public void testNoMarkup()
     {
-        testTemplate("no_markup.java", "no_markup.java");
+        testTemplate("no_markup.java", "no_markup_compiled.java");
     }
 
     /**
@@ -66,7 +66,7 @@ public class DefaultTemplateCompilerTest
     @Test
     public void testNoMarkupSingleLineComments()
     {
-        testTemplate("no_markup_single_line_comments.java", "no_markup_single_line_comments.java");
+        testTemplate("no_markup_single_line_comments.java", "no_markup_single_line_comments_compiled.java");
     }
 
     /** Simple "Hello World" template. */

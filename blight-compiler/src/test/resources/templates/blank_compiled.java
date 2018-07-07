@@ -1,4 +1,4 @@
-package templates;
+/* Generated code - Do not edit. */package templates;
 
 import java.io.IOException;
 
@@ -16,4 +16,6 @@ public class Blank extends AbstractTemplate
    public void execute() throws IOException
    {
    }
+
+	{ setCompiled(true); }
 }

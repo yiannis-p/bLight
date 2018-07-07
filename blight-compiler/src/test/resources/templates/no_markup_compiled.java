@@ -1,4 +1,4 @@
-package templates;
+/* Generated code - Do not edit. */package templates;
 
 import java.io.IOException;
 
@@ -17,4 +17,6 @@ public class NoMarkup extends AbstractTemplate
    {
       write("Hello World!");
    }
+
+	{ setCompiled(true); }
 }
