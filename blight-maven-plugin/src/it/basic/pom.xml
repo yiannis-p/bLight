@@ -5,7 +5,7 @@
 
 	<groupId>com.aleax.blight</groupId>
 	<artifactId>blight_integration_test</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 
 	<name>My maven plugin test project</name>
 
