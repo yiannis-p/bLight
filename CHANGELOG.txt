@@ -1,0 +1,22 @@
+------------------
+1.0.2 - 2018-07-24
+------------------
+
+	Changes:
+	
+		* Dynamically compiled templates classes now include full debug information.
+
+------------------
+1.0.1 - 2018-07-07
+------------------
+
+	Bug fixes:
+
+		* Allow anonymous inner classes in templates
+		* The compiler now now always marked templates as compiled, even if they are empty.
+
+------------------
+1.0.0 - 2018-04-10
+------------------
+
+	Initial release
