@@ -42,7 +42,7 @@ public class InMemoryCompiler implements com.aleax.blight.JavaCompiler
         String classpath = loadClasspath();
 
         // Add classpath to options
-        List<String> options = Arrays.asList("-classpath", classpath);
+        List<String> options = Arrays.asList("-g", "-classpath", classpath);
 
         // Java source from string
         List<JavaSourceFromString> strFiles = Arrays.asList(new JavaSourceFromString(className, code));
